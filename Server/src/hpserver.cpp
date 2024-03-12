@@ -2,6 +2,8 @@
 
 namespace networking::hole_punching
 {
+    uint16_t hpserver::peer_id_counter = 1;
+
 	hpserver::hpserver(short port) : sender(context, socket), receiver(context, socket), socket(context, udp::endpoint(udp::v4(), port)) { }
 
 	std::thread hpserver::Start()
@@ -17,12 +19,12 @@ namespace networking::hole_punching
 		{
 		case CONNECTION_TO_MAIN_SERVER_REQUEST:
 			std::cout << "Connection request came from client = " << sender << std::endl;
-			if (std::find(endpoints.begin(), endpoints.end(), sender) == endpoints.end())
+			if (!endpoint_peer_map.contains(sender))
 			{
-				endpoints.push_back(sender);
-				if (endpoints.size() > 1)
+                endpoint_peer_map[sender] = peer_id_counter++;
+				if (endpoint_peer_map.size() > 1)
 				{
-					std::cout << "Total connection count is " << endpoints.size() << std::endl;
+					std::cout << "Total connection count is " << endpoint_peer_map.size() << std::endl;
 					SendAddressToAllClients(sender); // Send address of this client to all
 					SendAllAddressesToClient(sender); // Send address of all clients to this
 				}
@@ -38,81 +40,18 @@ namespace networking::hole_punching
 		Listen();
 	}
 
-	//void hpserver::Listen()
-	//{
-	//	std::cout << "Server::Listen" << std::endl;
-
-	//	socket.async_receive_from(asio::buffer(tmp_incoming_msg.header_data(), tmp_incoming_msg.header_size()), tmp_endpoint,
-	//		[this](const std::error_code& ec, size_t bytes_transferred)
-	//		{
-	//			if (ec)
-	//			{
-	//				std::cerr << "[Server::Listen (Header)] Error = " << ec.message() << std::endl;
-	//				return;
-	//			}
-
-	//			std::cout << "Received first half, bytes = " << bytes_transferred << std::endl;
-
-
-	//			tmp_incoming_msg.resize_with_header();
-	//			
-	//			asio::async_read(socket, asio::buffer(tmp_incoming_msg.data(), tmp_incoming_msg.size()), tmp_endpoint,
-	//				[this](const std::error_code& ec, size_t bytes_transferred)
-	//				{
-	//					if (ec)
-	//					{
-	//						std::cerr << "[Server::Listen (Body)] Error = " << ec.message() << std::endl;
-	//						return;
-	//					}
-
-	//					std::cout << "Received second half, bytes = " << bytes_transferred << std::endl;
-
-	//					switch (tmp_incoming_msg.header.flag)
-	//					{
-	//					case CONNECTION_TO_MAIN_SERVER_REQUEST:
-	//						std::cout << "Connection request came from client = " << tmp_endpoint << std::endl;
-	//						if (std::find(endpoints.begin(), endpoints.end(), tmp_endpoint) == endpoints.end())
-	//						{
-	//							endpoints.push_back(tmp_endpoint);
-	//							if (endpoints.size() > 1)
-	//							{
-	//								std::cout << "Total connection count is " << endpoints.size() << std::endl;
-	//								SendAddressToAllClients(tmp_endpoint); // Send address of this client to all
-	//								SendAllAddressesToClient(tmp_endpoint); // Send address of all clients to this
-	//								Listen();
-	//							}
-	//							else
-	//							{
-	//								Listen();
-	//							}
-	//						}
-
-	//						break;
-
-	//					default:
-	//						std::cout << "Uncaught request came from client = " << tmp_endpoint << ", flag = " << (int)tmp_incoming_msg.header.flag << std::endl;
-	//						Listen();
-	//					}
-
-
-	//				}
-	//			);
-	//		}
-	//	);
-	//}
-
 	void hpserver::SendAddressToAllClients(const udp::endpoint& address)
 	{
 		std::shared_ptr<message> msg = std::make_shared<message>();
 		msg->header.flag = hpflag::OTHER_CLIENT_ENDPOINT;
+        *msg << endpoint_peer_map[address];
 		*msg << address;
 
-		for(int i = 0; i < endpoints.size(); i++)
-		{
-			if(endpoints[i] == address) continue;
-
-			SendInternal(msg, endpoints[i]);
-		}
+        for(auto it = endpoint_peer_map.begin(); it != endpoint_peer_map.end(); it++)
+        {
+            if(it->first == address) continue;
+            SendInternal(msg, it->first);
+        }
 	}
 
 	void hpserver::SendAllAddressesToClient(const udp::endpoint& receiver)
@@ -121,14 +60,19 @@ namespace networking::hole_punching
 		msg->header.flag = hpflag::OTHER_CLIENT_ENDPOINT;
 
 		udp::endpoint placeholder;
+        uint16_t placeholder2;
 
-		for (int i = 0; i < endpoints.size(); i++)
-		{
-			if (endpoints[i] == receiver) continue;
+        for(auto it = endpoint_peer_map.begin(); it != endpoint_peer_map.end(); it++)
+        {
+            if(it->first == receiver) continue;
 
-			*msg << endpoints[i];
-			SendInternal(msg, receiver);
-			*msg >> placeholder;
-		}
+            *msg << it->second;
+            *msg << it->first;
+
+            SendInternal(msg, receiver);
+
+            *msg >> placeholder;
+            *msg >> placeholder2;
+        }
 	}
 }

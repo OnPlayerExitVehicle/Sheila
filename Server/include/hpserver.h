@@ -4,6 +4,7 @@
 
 #include "receiver.h"
 #include "sender.h"
+#include <map>
 
 namespace networking::hole_punching
 {
@@ -23,6 +24,8 @@ namespace networking::hole_punching
 		asio::io_context context;
 		udp::socket socket;
 
-		std::vector<udp::endpoint> endpoints;
+//		std::vector<udp::endpoint> endpoints;
+        std::unordered_map<udp::endpoint, uint16_t> endpoint_peer_map;
+        static uint16_t peer_id_counter;
 	};
 }
