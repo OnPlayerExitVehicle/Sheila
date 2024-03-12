@@ -38,6 +38,16 @@ namespace networking::hole_punching
 		}
 	}
 
+    void hpclient::Send(std::shared_ptr<message> msg, uint16_t peer)
+    {
+        msg->header.flag = hpflag::MESSAGE;
+
+        if(peer_map.contains(peer))
+        {
+            peer_map[peer]->Send(msg);
+        }
+    }
+
 	void hpclient::SendToAll(const std::string& text)
 	{
 		std::shared_ptr<message> msg = std::make_shared<message>();
@@ -49,6 +59,16 @@ namespace networking::hole_punching
 			it->second->Send(msg);
 		}
 	}
+
+    void hpclient::SendToAll(std::shared_ptr<message> msg)
+    {
+        msg->header.flag = hpflag::MESSAGE;
+
+        for (auto it = peer_map.begin(); it != peer_map.end(); ++it)
+        {
+            it->second->Send(msg);
+        }
+    }
 
 	void hpclient::OnMessage(message&& msg, udp::endpoint&& sender)
 	{

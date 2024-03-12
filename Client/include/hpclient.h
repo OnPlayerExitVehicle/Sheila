@@ -22,8 +22,11 @@ namespace networking::hole_punching
 
 		std::thread Start(const std::string& address, short port);
 
+
 		void Send(const std::string& text, uint16_t peer);
+        void Send(std::shared_ptr<message> msg, uint16_t peer);
 		void SendToAll(const std::string& text);
+        void SendToAll(std::shared_ptr<message> msg);
 
 	private:
 
