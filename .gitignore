@@ -413,3 +413,6 @@ _deps
 #[Dd]ependencies/
 [Oo]ut/
 [Bb]uild/
+[Cc]make-build-debug/
+[Cc]make-build-release/
+.idea/
