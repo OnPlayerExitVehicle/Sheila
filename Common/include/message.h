@@ -182,7 +182,15 @@ namespace networking
 		if (!packed) return;
 
 		packed = false;
-		uint8_t flag;
-		*this >> flag;
+		*this >> this->header.flag;
 	}
+
+    class owned_message
+    {
+    public:
+        uint16_t peer_id;
+        message msg;
+
+        owned_message(uint16_t peer_id, message&& msg) : peer_id { peer_id }, msg(std::move(msg)) { }
+    };
 }

@@ -28,8 +28,9 @@ namespace networking::hole_punching
 		void SendToAll(const std::string& text);
         void SendToAll(std::shared_ptr<message> msg);
 
-	private:
+        std::vector<owned_message> messages;
 
+	private:
 		void OnMessage(message&& msg, udp::endpoint&& sender) override;
 
 		asio::io_context context;

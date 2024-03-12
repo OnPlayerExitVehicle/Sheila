@@ -90,6 +90,14 @@ namespace networking::hole_punching
 			}
 			break;
 
+        case MESSAGE:
+            if(endpoint_peer_map.contains(sender))
+            {
+                messages.push_back(owned_message(endpoint_peer_map[sender], std::move(msg)));
+            }
+
+            break;
+
 		default:
 
 			if(endpoint_peer_map.contains(sender))

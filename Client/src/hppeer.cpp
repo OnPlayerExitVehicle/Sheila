@@ -2,7 +2,7 @@
 
 namespace networking::hole_punching
 {
-	hppeer::hppeer(uint16_t id, asio::io_context& context, udp::socket& socket, udp::endpoint&& endpoint) : sender(context, socket), /*context(context), socket(socket),*/ endpoint{ endpoint }, id{ id } { }
+	hppeer::hppeer(uint16_t id, asio::io_context& context, udp::socket& socket, udp::endpoint&& endpoint) : sender(context, socket), endpoint{ endpoint }, id{ id } { }
 
 	void hppeer::StartHolePunching()
 	{
@@ -43,7 +43,6 @@ namespace networking::hole_punching
 
 	void hppeer::OnMessage(message&& msg)
 	{
-		std::string text;
 
 		switch (msg.header.flag)
 		{
@@ -56,22 +55,9 @@ namespace networking::hole_punching
 			{
 				hole_punched = true;
 				std::cout << "Hole punching success with client on address" << endpoint << std::endl;
-				if (!any_hole_punched)
-				{
-					any_hole_punched = true;
-					if (on_any_hole_punched)
-						on_any_hole_punched();
-				}
+
 			}
 			
-			break;
-
-		case MESSAGE:
-			msg >> text;
-			std::cout << std::endl << "Message from other client = " << text << std::endl;
-
-			if(on_message_received)
-				on_message_received();
 			break;
 
 		default:

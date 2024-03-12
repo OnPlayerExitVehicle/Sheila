@@ -31,12 +31,10 @@ namespace networking::hole_punching
 		bool hole_punching_received = false;
 		bool hole_punched = false;
 
-		bool forced_halt = false;
-
 	public:
-		inline static bool any_hole_punched = false;
-		inline static std::function<void()> on_any_hole_punched;
-		inline static std::function<void()> on_message_received;
+//		inline static bool any_hole_punched = false;
+//		inline static std::function<void()> on_any_hole_punched;
+//		inline static std::function<void()> on_message_received;
 	};
 }
 
