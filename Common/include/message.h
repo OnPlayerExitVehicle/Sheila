@@ -12,9 +12,8 @@ namespace networking
 		public:
 
 			_header() = default;
-			_header(const _header&) = delete;
-			_header& operator = (const _header&) = delete;
-			_header(_header&&) = default;
+			_header(const _header&) = default;
+			_header& operator = (const _header&) = default;
 		private:
 
 		public:
@@ -32,7 +31,11 @@ namespace networking
 			_body(uint8_t* first, size_t bytes) : byte_buffer(first, first + bytes) { }
 			_body(const _body&) = delete;
 			_body& operator = (const _body&) = delete;
-			_body(_body&& other) noexcept : byte_buffer{std::move(other.byte_buffer)} { }
+			_body(_body&& other) noexcept : byte_buffer{ std::move(other.byte_buffer) } { }
+            _body& operator = (_body&& other) noexcept
+            {
+                byte_buffer = std::move(other.byte_buffer);
+            }
 
 		private:
 
@@ -48,7 +51,13 @@ namespace networking
 
 		bool packed = false;
 
-		message(message&& other) noexcept : header{std::move(other.header)}, body{std::move(other.body)}, packed(other.packed) { }
+		message(message&& other) noexcept : header{ other.header }, body(std::move(other.body)), packed(other.packed) { }
+        message& operator = (message&& other) noexcept
+        {
+            header = other.header;
+            body = std::move(other.body);
+            packed = other.packed;
+        }
 
 		inline constexpr std::vector<uint8_t>& buffer()
 		{
@@ -192,5 +201,11 @@ namespace networking
         message msg;
 
         owned_message(uint16_t peer_id, message&& msg) : peer_id { peer_id }, msg(std::move(msg)) { }
+        owned_message(owned_message&& other) noexcept : peer_id {other.peer_id}, msg(std::move(other.msg)) { }
+        owned_message& operator = (owned_message&& other) noexcept
+        {
+            peer_id = other.peer_id;
+            msg = std::move(other.msg);
+        }
     };
 }
