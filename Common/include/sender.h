@@ -23,8 +23,8 @@ namespace networking
 	{
 		msg->pack();
 
-		socket.async_send_to(asio::buffer(msg->buffer()), endpoint,
-			[&endpoint, this](const std::error_code& ec, size_t bytes_transferred)
+		socket.async_send_to(asio::buffer(msg->data(), msg->size()), endpoint,
+			[&endpoint, msg, this](const std::error_code& ec, size_t bytes_transferred)
 			{
 				if (ec)
 				{
@@ -39,8 +39,8 @@ namespace networking
 	{
 		msg->pack();
 
-		socket.async_send_to(asio::buffer(msg->buffer()), endpoint,
-			[success, this](const std::error_code& ec, size_t bytes_transferred)
+		socket.async_send_to(asio::buffer(msg->data(), msg->size()), endpoint,
+			[success, msg, this](const std::error_code& ec, size_t bytes_transferred)
 			{
 				if (ec)
 				{
@@ -59,15 +59,15 @@ namespace networking
 
 		std::shared_ptr<asio::steady_timer> ptr = std::make_shared<asio::steady_timer>(context, std::chrono::milliseconds(milliseconds));
 		ptr->async_wait(
-			[&msg, &endpoint, ptr, this](const std::error_code& ec)
+			[msg, &endpoint, ptr, this](const std::error_code& ec)
 			{
 				if (ec)
 				{
 					std::cerr << "[Async Wait] Error = " << ec.message() << std::endl;
 					return;
 				}
-				socket.async_send_to(asio::buffer(msg->buffer()), endpoint,
-				[&endpoint, this](const std::error_code& ec, size_t bytes_transferred)
+				socket.async_send_to(asio::buffer(msg->data(), msg->size()), endpoint,
+				[&endpoint, msg, this](const std::error_code& ec, size_t bytes_transferred)
 					{
 						if (ec)
 						{
@@ -87,15 +87,15 @@ namespace networking
 		std::shared_ptr<asio::steady_timer> ptr = std::make_shared<asio::steady_timer>(context, std::chrono::milliseconds(milliseconds));
 		
 		ptr->async_wait(
-			[&msg, success, &endpoint, ptr, this](const std::error_code& ec)
+			[msg, success, &endpoint, ptr, this](const std::error_code& ec)
 			{
 				if (ec)
 				{
 					std::cerr << "[Async Wait] Error = " << ec.message() << std::endl;
 					return;
 				}
-				socket.async_send_to(asio::buffer(msg->buffer()), endpoint,
-					[success, &endpoint, this](const std::error_code& ec, size_t bytes_transferred)
+				socket.async_send_to(asio::buffer(msg->data(), msg->size()), endpoint,
+					[success, &endpoint, msg, this](const std::error_code& ec, size_t bytes_transferred)
 					{
 						if (ec)
 						{
