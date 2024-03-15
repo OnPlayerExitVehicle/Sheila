@@ -14,7 +14,6 @@ namespace networking::hole_punching
 		std::cout << "SendHolePunching" << std::endl;
 		std::shared_ptr<message> msg = std::make_shared<message>();
 		msg->header.flag = hpflag::CONNECTION_TO_PEER_REQUEST;
-		std::cout << this << std::endl;
 
 		SendInternalAfter(msg, endpoint, 250,
 			[this]()
