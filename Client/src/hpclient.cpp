@@ -72,6 +72,7 @@ namespace networking::hole_punching
 
 	void hpclient::OnMessage(message&& msg, udp::endpoint&& sender)
 	{
+		std::cout << "OnMessage" << std::endl;
 		udp::endpoint ep;
 		uint16_t peer_id;
 
@@ -93,7 +94,8 @@ namespace networking::hole_punching
         case MESSAGE:
             if(endpoint_peer_map.contains(sender))
             {
-                messages.push_back(owned_message(endpoint_peer_map[sender], std::move(msg)));
+                message_queue.Enqueue(std::move(owned_message(endpoint_peer_map[sender], std::move(msg))));
+                //messages.push_back(owned_message(endpoint_peer_map[sender], std::move(msg)));
             }
 
             break;
