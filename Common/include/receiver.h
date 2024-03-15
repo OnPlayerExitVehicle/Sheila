@@ -22,7 +22,9 @@ namespace networking
 					}
 
 					//std::shared_ptr<message> msg = std::make_shared<message>(data, bytes_transferred);
-					OnMessage(message(data, bytes_transferred), std::move(tmp_endpoint));
+					message msg(data, bytes_transferred);
+					//msg.unpack();
+					OnMessage(std::move(msg), std::move(tmp_endpoint));
 				}
 			);
 		}

@@ -35,6 +35,7 @@ namespace networking
             _body& operator = (_body&& other) noexcept
             {
                 byte_buffer = std::move(other.byte_buffer);
+                return *this;
             }
 
 		private:
@@ -57,6 +58,7 @@ namespace networking
             header = other.header;
             body = std::move(other.body);
             packed = other.packed;
+            return *this;
         }
 
 		inline constexpr std::vector<uint8_t>& buffer()
@@ -176,7 +178,7 @@ namespace networking
 		return lhs;
 	}
 
-	inline message::message(uint8_t* first, size_t bytes) : body(first, bytes) { *this >> header.flag; }
+	inline message::message(uint8_t* first, size_t bytes) : body(first, bytes), packed(false) { *this >> header.flag; }
 
 	void message::pack() noexcept
 	{
@@ -200,12 +202,14 @@ namespace networking
         uint16_t peer_id;
         message msg;
 
+        owned_message() = default;
         owned_message(uint16_t peer_id, message&& msg) : peer_id { peer_id }, msg(std::move(msg)) { }
         owned_message(owned_message&& other) noexcept : peer_id {other.peer_id}, msg(std::move(other.msg)) { }
         owned_message& operator = (owned_message&& other) noexcept
         {
             peer_id = other.peer_id;
             msg = std::move(other.msg);
+            return *this;
         }
     };
 }
