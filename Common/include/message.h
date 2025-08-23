@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "netexception.h"
 
 namespace networking
 {
@@ -126,7 +127,7 @@ namespace networking
 		const size_t size = sizeof(T);
 		std::vector<uint8_t>& byte_buffer = lhs.buffer();
 		const size_t buffer_size = byte_buffer.size();
-		if (buffer_size < size) throw std::exception("Size overrun while reading from message buffer!");
+        if (buffer_size < size) throw networking::netexception("Size overrun while reading from message buffer!");
 
 		std::memcpy(&rhs, byte_buffer.data() + buffer_size - size, size);
 		//byte_buffer.pop()
