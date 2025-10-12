@@ -2,6 +2,7 @@
 #include <iostream>
 #include <format>
 #include <cassert>
+#include "netexception.h"
 
 namespace networking
 {
@@ -101,7 +102,7 @@ namespace networking
 		{
 			std::scoped_lock lock(_data_mutex);
 
-			if (Empty()) throw std::exception("Trying to access memory out of bounds!");
+			if (Empty()) throw netexception("Trying to access memory out of bounds!");
 
 			_length--;
 
