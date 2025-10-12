@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(Client)
+project(SheilaClientLib)
 
 set(ASIO_DIRECTORY "../Dependencies/ASIO/asio/include")
 set(PROJECT_SOURCES_DIR "./src")
@@ -15,5 +15,19 @@ include_directories(
 
 file(GLOB PROJECT_SOURCES ${PROJECT_SOURCES_DIR}/*.cpp)
 list(REMOVE_ITEM PROJECT_SOURCES "${PROJECT_SOURCES_DIR}/main.cpp")
+add_library(SheilaClientLib STATIC ${PROJECT_SOURCES})
 
-add_library(Client STATIC ${PROJECT_SOURCES})
+if(APPLE)
+{
+	set_target_properties(SheilaClientLib PROPERTIES
+		FRAMEWORK TRUE
+		FRAMEWORK_VERSION A
+		MACOSX_FRAMEWORK_IDENTIFIER com.sheila.clientlib
+		MACOSX_FRAMEWORK_BUNDLE_VERSION 1.0.1
+		MACOSX_FRAMEWORK_SHORT_VERSION_STRING 1.0.1
+		PUBLIC_HEADER "${PROJECT_INCLUDES_DIR}/hpclient.h"
+		XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development"
+		XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+		XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+	)
+}

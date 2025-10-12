@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(Server)
+project(SheilaServer)
 
 set(ASIO_DIRECTORY "../Dependencies/ASIO/asio/include")
 set(PROJECT_SOURCES_DIR "./src")
@@ -15,5 +15,5 @@ include_directories(
 
 file(GLOB PROJECT_SOURCES ${PROJECT_SOURCES_DIR}/*.cpp)
 
-add_executable(Server ${PROJECT_SOURCES})
-set_property(TARGET Server PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+add_executable(SheilaServer ${PROJECT_SOURCES})
+set_property(TARGET SheilaServer PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
