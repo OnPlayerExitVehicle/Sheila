@@ -25,8 +25,8 @@ namespace networking::hole_punching
 				if (endpoint_peer_map.size() > 1)
 				{
 					std::cout << "Total connection count is " << endpoint_peer_map.size() << std::endl;
-					SendAddressToAllClients(sender); // Send address of this client to all
-					SendAllAddressesToClient(sender); // Send address of all clients to this
+					SendAddressToAllClients(sender); // Send address of this client to all clients
+					SendAllAddressesToClient(sender); // Send address of all clients to this client
 				}
 			}
 

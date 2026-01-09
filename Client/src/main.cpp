@@ -23,16 +23,6 @@ int main()
 
 	std::cout << "Client started!" << std::endl;
 
-//	hppeer::on_any_hole_punched = []()
-//	{
-//			b = true;
-//	};
-//
-//	hppeer::on_message_received = []()
-//	{
-//			br = true;
-//	};
-
 	while (!b) continue;
 	WaitForInput();
 
